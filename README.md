@@ -6,9 +6,9 @@
 | Sprint | Descrição |
 |------|----------|
 | Sprint 1 | Modelagem inicial (protótipo, diagrama, CRC) |
-| Sprint 2 | Implementação inicial da API |
-| Sprint 3 | Persistência e regras de negócio |
-| Sprint 4 | Testes e refinamentos |
+| Sprint 2 |  |
+| Sprint 3 |  |
+| Sprint 4 |  |
 
 ---
 
