@@ -24,13 +24,13 @@ A documentação está organizada por sprints:
 
 ## 👥 Equipe
 
-- André Luiz F.Rosa
-- Bruno
-- João
-- Luiz
-- Leal
-- Rafael
-- Vinicius Matos
+- André Luiz F. Rosa
+- Bruno da Silva de Paulo
+- João Pedro Bandeiras
+- Luiz Paulo Delgado
+- Gabriel Leal Matos
+- Rafael Henriques Correa
+- Vinicius Matos Rocha
 ---
 
 ## 📌 Status do Projeto
