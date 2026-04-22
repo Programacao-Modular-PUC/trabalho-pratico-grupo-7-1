@@ -30,7 +30,7 @@ A documentação está organizada por sprints:
 - Luiz Paulo Delgado
 - Gabriel Leal Matos
 - Rafael Henriques Correa
-- Vinicius Matos Rocha
+- Vinicius Matos Oliveira
 ---
 
 ## 📌 Status do Projeto
