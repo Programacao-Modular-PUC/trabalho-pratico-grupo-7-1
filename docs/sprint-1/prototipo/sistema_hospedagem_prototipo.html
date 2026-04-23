@@ -1,0 +1,575 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --sand:#F5EFE6;--sand2:#EAE0D0;--teal:#0F6E56;--teal-light:#E1F5EE;--teal-mid:#1D9E75;
+    --text:#2C2C2A;--muted:#888780;--white:#fff;--border:#D3D1C7;
+    --coral:#D85A30;--amber:#BA7517;
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);font-size:14px}
+  .layout{display:flex;min-height:100vh}
+  .sidebar{width:220px;background:var(--teal);padding:0;display:flex;flex-direction:column;flex-shrink:0}
+  .logo{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.15)}
+  .logo-title{font-family:'DM Serif Display',serif;color:#fff;font-size:18px;line-height:1.2}
+  .logo-sub{color:rgba(255,255,255,0.6);font-size:11px;margin-top:2px}
+  .nav{padding:12px 0;flex:1}
+  .nav-section{padding:8px 20px 4px;color:rgba(255,255,255,0.45);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;color:rgba(255,255,255,0.75);font-size:13px;transition:background .15s}
+  .nav-item:hover{background:rgba(255,255,255,0.1)}
+  .nav-item.active{background:rgba(255,255,255,0.18);color:#fff;font-weight:500}
+  .nav-icon{width:16px;height:16px;opacity:.8;flex-shrink:0}
+  .main{flex:1;overflow:auto}
+  .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+  .topbar-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--text)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;border:none;transition:all .15s}
+  .btn-primary{background:var(--teal);color:#fff}
+  .btn-primary:hover{background:var(--teal-mid)}
+  .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+  .btn-outline:hover{background:var(--sand)}
+  .btn-danger{background:#FCEBEB;color:#A32D2D;border:1px solid #F7C1C1}
+  .content{padding:24px 28px}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+  .stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px}
+  .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  .stat-value{font-size:26px;font-weight:500;color:var(--text);margin-top:4px}
+  .stat-tag{font-size:11px;color:var(--teal);margin-top:2px}
+  .card{background:var(--white);border:1px solid var(--border);border-radius:12px;margin-bottom:16px}
+  .card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .card-title{font-weight:500;font-size:14px}
+  .table{width:100%;border-collapse:collapse}
+  .table th{padding:10px 16px;text-align:left;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)}
+  .table td{padding:12px 16px;border-bottom:1px solid var(--sand);font-size:13px}
+  .table tr:last-child td{border-bottom:none}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+  .badge-green{background:#EAF3DE;color:#3B6D11}
+  .badge-amber{background:#FAEEDA;color:#854F0B}
+  .badge-red{background:#FCEBEB;color:#A32D2D}
+  .badge-teal{background:var(--teal-light);color:var(--teal)}
+  .badge-gray{background:#F1EFE8;color:#5F5E5A}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px}
+  .form-group{display:flex;flex-direction:column;gap:6px}
+  .form-group.full{grid-column:1/-1}
+  label{font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  input,select,textarea{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);width:100%}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
+  textarea{resize:vertical;min-height:70px}
+  .form-footer{padding:16px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+  .tag{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11px}
+  .dash-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+  .activity-item{display:flex;align-items:flex-start;gap:12px;padding:12px 20px;border-bottom:1px solid var(--sand)}
+  .activity-item:last-child{border-bottom:none}
+  .activity-dot{width:8px;height:8px;border-radius:50%;background:var(--teal-mid);margin-top:4px;flex-shrink:0}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--teal);flex-shrink:0}
+  .recibo{background:var(--white);border:1px solid var(--border);border-radius:12px;max-width:480px;margin:0 auto}
+  .recibo-header{background:var(--teal);padding:24px;border-radius:12px 12px 0 0;text-align:center}
+  .recibo-body{padding:24px}
+  .recibo-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--sand);font-size:13px}
+  .recibo-total{display:flex;justify-content:space-between;padding:14px 0 0;font-size:15px;font-weight:500}
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;background:var(--teal-light);color:var(--teal)}
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--sand)}
+  .toggle-row:last-child{border-bottom:none}
+  .toggle-switch{width:38px;height:20px;background:var(--border);border-radius:10px;position:relative;cursor:pointer}
+  .toggle-switch.on{background:var(--teal-mid)}
+  .toggle-knob{width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:left .15s}
+  .toggle-switch.on .toggle-knob{left:20px}
+  .empty-state{text-align:center;padding:40px;color:var(--muted)}
+  .empty-icon{font-size:32px;margin-bottom:8px}
+  .breadcrumb{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .room-card{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+  .room-img{background:linear-gradient(135deg,var(--sand2),var(--teal-light));height:100px;display:flex;align-items:center;justify-content:center;font-size:32px}
+  .room-body{padding:14px}
+  .room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+</style>
+
+<div class="layout" id="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-title">Maraú Hospeda</div>
+      <div class="logo-sub">Sistema de Hospedagem</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-section">Principal</div>
+      <div class="nav-item active" onclick="show('dashboard')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-section">Cadastros</div>
+      <div class="nav-item" onclick="show('residencias')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Residências
+      </div>
+      <div class="nav-item" onclick="show('quartos')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 20v-8l10-6 10 6v8"/><rect x="8" y="14" width="8" height="6" rx="1"/></svg>
+        Quartos
+      </div>
+      <div class="nav-item" onclick="show('clientes')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Clientes
+      </div>
+      <div class="nav-section">Operações</div>
+      <div class="nav-item" onclick="show('alugueis')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Aluguéis
+      </div>
+      <div class="nav-item" onclick="show('novoAluguel')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Novo Aluguel
+      </div>
+      <div class="nav-item" onclick="show('recibo')">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16l3-2 2 2 2-2 2 2 2-2 3 2V4a2 2 0 00-2-2z"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+        Recibo
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main" id="mainContent"></div>
+</div>
+
+<script>
+const screens = {
+
+dashboard: `
+<div class="topbar">
+  <div>
+    <div class="breadcrumb">Início</div>
+    <div class="topbar-title">Dashboard</div>
+  </div>
+  <button class="btn btn-primary" onclick="show('novoAluguel')">+ Novo Aluguel</button>
+</div>
+<div class="content">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Residências</div>
+      <div class="stat-value">3</div>
+      <div class="stat-tag">cadastradas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Quartos</div>
+      <div class="stat-value">12</div>
+      <div class="stat-tag">5 disponíveis</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Clientes</div>
+      <div class="stat-value">48</div>
+      <div class="stat-tag">cadastrados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Receita do Mês</div>
+      <div class="stat-value">R$ 8.240</div>
+      <div class="stat-tag">em aluguéis</div>
+    </div>
+  </div>
+  <div class="dash-grid">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Aluguéis Recentes</span>
+        <button class="btn btn-outline" onclick="show('alugueis')">Ver todos</button>
+      </div>
+      <table class="table">
+        <thead><tr><th>Cliente</th><th>Quarto</th><th>Entrada</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Ana Silva</td><td>Quarto 02 – Casal</td><td>10/07</td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>Carlos Souza</td><td>Quarto 01 – Solteiro</td><td>08/07</td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>Mariana Luz</td><td>Quarto 03 – Casal</td><td>05/07</td><td><span class="badge badge-gray">Encerrado</span></td></tr>
+          <tr><td>João Farias</td><td>Quarto 01 – Solteiro</td><td>01/07</td><td><span class="badge badge-gray">Encerrado</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Disponibilidade Hoje</span></div>
+      <div class="activity-item" style="flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+          <span style="font-size:13px">Quarto 01 – Solteiro</span><span class="badge badge-green">Livre</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+          <span style="font-size:13px">Quarto 02 – Casal</span><span class="badge badge-red">Ocupado</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+          <span style="font-size:13px">Quarto 03 – Casal</span><span class="badge badge-green">Livre</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+          <span style="font-size:13px">Quarto 04 – Solteiro</span><span class="badge badge-amber">Reservado</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+          <span style="font-size:13px">Quarto 05 – Casal</span><span class="badge badge-red">Ocupado</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`,
+
+residencias: `
+<div class="topbar">
+  <div>
+    <div class="breadcrumb">Cadastros</div>
+    <div class="topbar-title">Residências</div>
+  </div>
+  <button class="btn btn-primary" onclick="show('novaResidencia')">+ Nova Residência</button>
+</div>
+<div class="content">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Residências Cadastradas</span>
+      <input style="width:200px" placeholder="Buscar...">
+    </div>
+    <table class="table">
+      <thead><tr><th>Endereço</th><th>Bairro</th><th>CEP</th><th>Telefone</th><th>Email</th><th>Quartos</th><th>Ações</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Rua das Praias, 12</strong></td>
+          <td>Centro</td><td>45520-000</td><td>(73) 9 8800-1234</td><td>casa1@gmail.com</td>
+          <td><span class="badge badge-teal">4 quartos</span></td>
+          <td><button class="btn btn-outline" style="padding:4px 10px;font-size:12px" onclick="show('quartos')">Quartos</button></td>
+        </tr>
+        <tr>
+          <td><strong>Av. Beira Mar, 45</strong></td>
+          <td>Barra Grande</td><td>45520-010</td><td>(73) 9 9900-5678</td><td>beiramar@gmail.com</td>
+          <td><span class="badge badge-teal">5 quartos</span></td>
+          <td><button class="btn btn-outline" style="padding:4px 10px;font-size:12px" onclick="show('quartos')">Quartos</button></td>
+        </tr>
+        <tr>
+          <td><strong>Rua do Manguezal, 7</strong></td>
+          <td>Taipu de Fora</td><td>45520-020</td><td>(73) 9 7700-9012</td><td>mangue@gmail.com</td>
+          <td><span class="badge badge-teal">3 quartos</span></td>
+          <td><button class="btn btn-outline" style="padding:4px 10px;font-size:12px" onclick="show('quartos')">Quartos</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>`,
+
+novaResidencia: `
+<div class="topbar">
+  <div>
+    <div class="breadcrumb">Residências › Nova</div>
+    <div class="topbar-title">Cadastrar Residência</div>
+  </div>
+</div>
+<div class="content">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Dados da Residência</span></div>
+    <div class="form-grid">
+      <div class="form-group full"><label>Endereço (Rua/Avenida)</label><input placeholder="Ex: Rua das Praias"></div>
+      <div class="form-group"><label>Número</label><input placeholder="Ex: 12"></div>
+      <div class="form-group"><label>Bairro</label><input placeholder="Ex: Centro"></div>
+      <div class="form-group"><label>CEP</label><input placeholder="00000-000"></div>
+      <div class="form-group"><label>Cidade</label><input placeholder="Maraú" value="Maraú"></div>
+      <div class="form-group"><label>Estado</label><select><option>Bahia</option><option>São Paulo</option></select></div>
+      <div class="form-group"><label>Telefone</label><input placeholder="(73) 9 0000-0000"></div>
+      <div class="form-group"><label>Email</label><input type="email" placeholder="contato@email.com"></div>
+    </div>
+    <div class="form-footer">
+      <button class="btn btn-outline" onclick="show('residencias')">Cancelar</button>
+      <button class="btn btn-primary">Salvar Residência</button>
+    </div>
+  </div>
+</div>`,
+
+quartos: `
+<div class="topbar">
+  <div>
+    <div class="breadcrumb">Cadastros</div>
+    <div class="topbar-title">Quartos</div>
+  </div>
+  <button class="btn btn-primary" onclick="show('novoQuarto')">+ Novo Quarto</button>
+</div>
+<div class="content">
+  <div style="margin-bottom:14px;display:flex;gap:8px">
+    <select style="width:220px"><option>Rua das Praias, 12</option><option>Av. Beira Mar, 45</option><option>Rua do Manguezal, 7</option></select>
+  </div>
+  <div class="room-grid">
+    <div class="room-card">
+      <div class="room-img">🛏</div>
+      <div class="room-body">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong style="font-size:14px">Quarto 01</strong><span class="badge badge-green">Livre</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Tipo: Solteiro</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+          <span class="pill">❄ Ar-condicionado</span>
+        </div>
+        <div style="font-size:13px;font-weight:500;color:var(--teal)">R$ 120,00 / diária</div>
+      </div>
+    </div>
+    <div class="room-card">
+      <div class="room-img">🛏</div>
+      <div class="room-body">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong style="font-size:14px">Quarto 02</strong><span class="badge badge-red">Ocupado</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Tipo: Casal</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+          <span class="pill">❄ Ar-condicionado</span>
+          <span class="pill">🛁 Hidromassagem</span>
+        </div>
+        <div style="font-size:13px;font-weight:500;color:var(--teal)">R$ 200,00 / diária</div>
+      </div>
+    </div>
+    <div class="room-card">
+      <div class="room-img">🛌</div>
+      <div class="room-body">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong style="font-size:14px">Quarto 03</strong><span class="badge badge-amber">Reservado</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Tipo: Casal</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+          <span class="pill">🛁 Hidromassagem</span>
+        </div>
+        <div style="font-size:13px;font-weight:500;color:var(--teal)">R$ 170,00 / diária</div>
+      </div>
+    </div>
+  </div>
+</div>`,
+
+novoQuarto: `
+<div class="topbar">
+  <div>
+    <div class="breadcrumb">Quartos › Novo</div>
+    <div class="topbar-title">Cadastrar Quarto</div>
+  </div>
+</div>
+<div class="content">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Dados do Quarto</span></div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Residência</label>
+        <select><option>Rua das Praias, 12 – Centro</option><option>Av. Beira Mar, 45 – Barra Grande</option><option>Rua do Manguezal, 7 – Taipu de Fora</option></select>
+      </div>
+      <div class="form-group"><label>Número / Identificação</label><input placeholder="Ex: Quarto 04"></div>
+      <div class="form-group"><label>Tipo</label><select><option>Solteiro</option><option>Casal</option></select></div>
+      <div class="form-group"><label>Valor Base da Diária (R$)</label><input type="number" placeholder="Ex: 120.00"></div>
+      <div class="form-group"><label>Adicional Ar-condicionado (R$)</label><input type="number" placeholder="Ex: 20.00"></div>
+      <div class="form-group"><label>Adicional Hidromassagem (R$)</label><input type="number" placeholder="Ex: 30.00"></div>
+    </div>
+    <div style="padding:0 20px 4px;font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Itens Adicionais</div>
+    <div class="toggle-row">
+      <span style="font-size:13px">Possui Ar-condicionado?</span>
+      <div class="toggle-switch" onclick="this.classList.toggle('on');this.querySelector('.toggle-knob').style.left=this.classList.contains('on')?'20px':'2px'"><div class="toggle-knob"></div></div>
+    </div>
+    <div class="toggle-row">
+      <span style="font-size:13px">Possui Banheira de Hidromassagem?</span>
+      <div class="toggle-switch" onclick="this.classList.toggle('on');this.querySelector('.toggle-knob').style.left=this.classList.contains('on')?'20px':'2px'"><div class="toggle-knob"></div></div>
+    </div>
+    <div class="form-footer">
+      <button class="btn btn-outline" onclick="show('quartos')">Cancelar</button>
+      <button class="btn btn-primary">Salvar Quarto</button>
+    </div>
+  </div>
+</div>`,
+
+clientes: `
+<div class="topbar">
+  <div>
+    <div class="breadcrumb">Cadastros</div>
+    <div class="topbar-title">Clientes</div>
+  </div>
+  <button class="btn btn-primary" onclick="show('novoCliente')">+ Novo Cliente</button>
+</div>
+<div class="content">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Clientes Cadastrados</span>
+      <input style="width:200px" placeholder="Buscar por nome ou CPF...">
+    </div>
+    <table class="table">
+      <thead><tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>Email</th><th>Histórico</th><th>Ações</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar">AS</div>Ana Silva</div></td>
+          <td>123.456.789-00</td><td>(11) 9 9000-1111</td><td>ana@email.com</td>
+          <td><span class="badge badge-teal">3 estadias</span></td>
+          <td><button class="btn btn-outline" style="padding:4px 10px;font-size:12px">Ver</button></td>
+        </tr>
+        <tr>
+          <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar">CS</div>Carlos Souza</div></td>
+          <td>987.654.321-00</td><td>(21) 9 8800-2222</td><td>carlos@email.com</td>
+          <td><span class="badge badge-teal">1 estadia</span></td>
+          <td><button class="btn btn-outline" style="padding:4px 10px;font-size:12px">Ver</button></td>
+        </tr>
+        <tr>
+          <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar">ML</div>Mariana Luz</div></td>
+          <td>111.222.333-44</td><td>(31) 9 7700-3333</td><td>mariana@email.com</td>
+          <td><span class="badge badge-teal">2 estadias</span></td>
+          <td><button class="btn btn-outline" style="padding:4px 10px;font-size:12px">Ver</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>`,
+
+novoCliente: `
+<div class="topbar">
+  <div>
+    <div class="breadcrumb">Clientes › Novo</div>
+    <div class="topbar-title">Cadastrar Cliente</div>
+  </div>
+</div>
+<div class="content">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Dados do Cliente</span></div>
+    <div class="form-grid">
+      <div class="form-group full"><label>Nome Completo</label><input placeholder="Ex: Ana Silva"></div>
+      <div class="form-group"><label>CPF</label><input placeholder="000.000.000-00"></div>
+      <div class="form-group"><label>Telefone</label><input placeholder="(00) 9 0000-0000"></div>
+      <div class="form-group full"><label>Email de Contato</label><input type="email" placeholder="cliente@email.com"></div>
+      <div class="form-group full"><label>Endereço Completo</label><input placeholder="Rua, Número, Bairro, Cidade – UF"></div>
+    </div>
+    <div class="form-footer">
+      <button class="btn btn-outline" onclick="show('clientes')">Cancelar</button>
+      <button class="btn btn-primary">Salvar Cliente</button>
+    </div>
+  </div>
+</div>`,
+
+alugueis: `
+<div class="topbar">
+  <div>
+    <div class="breadcrumb">Operações</div>
+    <div class="topbar-title">Aluguéis & Reservas</div>
+  </div>
+  <button class="btn btn-primary" onclick="show('novoAluguel')">+ Novo Aluguel</button>
+</div>
+<div class="content">
+  <div style="display:flex;gap:8px;margin-bottom:14px">
+    <select style="width:160px"><option>Todos os status</option><option>Ativo</option><option>Reservado</option><option>Encerrado</option></select>
+    <select style="width:200px"><option>Todas as residências</option><option>Rua das Praias, 12</option><option>Av. Beira Mar, 45</option></select>
+  </div>
+  <div class="card">
+    <table class="table">
+      <thead><tr><th>Cliente</th><th>Residência</th><th>Quarto</th><th>Entrada</th><th>Saída</th><th>Diárias</th><th>Total</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Ana Silva</td><td>Rua das Praias, 12</td><td>Quarto 02</td>
+          <td>10/07 12h</td><td>14/07 12h</td><td>4</td><td>R$ 800,00</td>
+          <td><span class="badge badge-green">Ativo</span></td>
+          <td><button class="btn btn-outline" style="padding:4px 10px;font-size:12px" onclick="show('recibo')">Recibo</button></td>
+        </tr>
+        <tr>
+          <td>Carlos Souza</td><td>Av. Beira Mar, 45</td><td>Quarto 01</td>
+          <td>08/07 15h</td><td>11/07 10h</td><td>3</td><td>R$ 360,00</td>
+          <td><span class="badge badge-green">Ativo</span></td>
+          <td><button class="btn btn-outline" style="padding:4px 10px;font-size:12px" onclick="show('recibo')">Recibo</button></td>
+        </tr>
+        <tr>
+          <td>João Farias</td><td>Rua das Praias, 12</td><td>Quarto 04</td>
+          <td>20/07 12h</td><td>25/07 12h</td><td>5</td><td>R$ 850,00</td>
+          <td><span class="badge badge-amber">Reservado</span></td>
+          <td><button class="btn btn-outline" style="padding:4px 10px;font-size:12px" onclick="show('recibo')">Recibo</button></td>
+        </tr>
+        <tr>
+          <td>Mariana Luz</td><td>Rua do Manguezal, 7</td><td>Quarto 03</td>
+          <td>01/07 12h</td><td>05/07 12h</td><td>4</td><td>R$ 680,00</td>
+          <td><span class="badge badge-gray">Encerrado</span></td>
+          <td><button class="btn btn-outline" style="padding:4px 10px;font-size:12px" onclick="show('recibo')">Recibo</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>`,
+
+novoAluguel: `
+<div class="topbar">
+  <div>
+    <div class="breadcrumb">Operações › Novo</div>
+    <div class="topbar-title">Formulário de Aluguel</div>
+  </div>
+</div>
+<div class="content">
+  <div class="card" style="max-width:680px">
+    <div class="card-header"><span class="card-title">Dados do Aluguel</span></div>
+    <div class="form-grid">
+      <div class="form-group full"><label>Cliente</label>
+        <select><option value="">Selecione ou cadastre um cliente...</option><option>Ana Silva – CPF 123.456.789-00</option><option>Carlos Souza – CPF 987.654.321-00</option></select>
+      </div>
+      <div class="form-group full"><label>Residência</label>
+        <select><option value="">Selecione a residência...</option><option>Rua das Praias, 12 – Centro</option><option>Av. Beira Mar, 45 – Barra Grande</option></select>
+      </div>
+      <div class="form-group full"><label>Quarto</label>
+        <select><option value="">Selecione o quarto...</option><option>Quarto 01 – Solteiro – R$120/diária (Livre)</option><option>Quarto 03 – Casal – R$170/diária (Livre)</option></select>
+      </div>
+      <div class="form-group"><label>Data e Horário de Entrada</label><input type="datetime-local"></div>
+      <div class="form-group"><label>Data e Horário de Saída</label><input type="datetime-local"></div>
+    </div>
+    <div style="padding:4px 20px 16px">
+      <div style="background:var(--sand);border-radius:8px;padding:14px;font-size:13px">
+        <div style="font-weight:500;margin-bottom:10px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Resumo do Aluguel</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Valor base da diária</span><span>R$ –</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Número de diárias</span><span>–</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Adicional (ar/hidromassagem)</span><span>R$ –</span></div>
+        <div style="display:flex;justify-content:space-between;font-weight:500;border-top:1px solid var(--border);padding-top:8px;margin-top:4px"><span>Total a pagar</span><span style="color:var(--teal)">R$ –</span></div>
+      </div>
+    </div>
+    <div class="form-footer">
+      <button class="btn btn-outline" onclick="show('alugueis')">Cancelar</button>
+      <button class="btn btn-primary" onclick="show('recibo')">Confirmar Aluguel</button>
+    </div>
+  </div>
+</div>`,
+
+recibo: `
+<div class="topbar">
+  <div>
+    <div class="breadcrumb">Operações › Recibo</div>
+    <div class="topbar-title">Recibo de Aluguel</div>
+  </div>
+  <button class="btn btn-outline">Imprimir</button>
+</div>
+<div class="content">
+  <div class="recibo">
+    <div class="recibo-header">
+      <div style="font-family:'DM Serif Display',serif;font-size:20px;color:#fff;margin-bottom:4px">Maraú Hospeda</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.7)">Recibo de Hospedagem</div>
+    </div>
+    <div class="recibo-body">
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Dados do Hóspede</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="avatar" style="width:40px;height:40px;font-size:13px">AS</div>
+          <div>
+            <div style="font-weight:500">Ana Silva</div>
+            <div style="font-size:12px;color:var(--muted)">CPF 123.456.789-00 · ana@email.com</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Dados da Hospedagem</div>
+        <div class="recibo-row"><span style="color:var(--muted)">Residência</span><span>Rua das Praias, 12 – Centro</span></div>
+        <div class="recibo-row"><span style="color:var(--muted)">Quarto</span><span>Quarto 02 – Casal</span></div>
+        <div class="recibo-row"><span style="color:var(--muted)">Itens do quarto</span><span><span class="pill" style="font-size:11px">❄ Ar</span> <span class="pill" style="font-size:11px">🛁 Hidro</span></span></div>
+      </div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Período</div>
+        <div class="recibo-row"><span style="color:var(--muted)">Data e horário de entrada</span><span>10/07/2025 às 14h00</span></div>
+        <div class="recibo-row"><span style="color:var(--muted)">Data e horário de saída</span><span>14/07/2025 às 12h00</span></div>
+        <div class="recibo-row"><span style="color:var(--muted)">Número de diárias</span><span><strong>4 diárias</strong></span></div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Valores</div>
+        <div class="recibo-row"><span style="color:var(--muted)">Valor base (diária casal)</span><span>R$ 150,00</span></div>
+        <div class="recibo-row"><span style="color:var(--muted)">Adicional ar-condicionado</span><span>R$ 20,00</span></div>
+        <div class="recibo-row"><span style="color:var(--muted)">Adicional hidromassagem</span><span>R$ 30,00</span></div>
+        <div class="recibo-row"><span style="color:var(--muted)">Valor/diária (com adicionais)</span><span>R$ 200,00</span></div>
+        <div class="recibo-total"><span>Total a pagar</span><span style="color:var(--teal);font-size:20px">R$ 800,00</span></div>
+      </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px dashed var(--border);text-align:center">
+        <div style="font-size:11px;color:var(--muted)">Maraú – BA · (73) 9 8800-1234 · casa1@gmail.com</div>
+        <div style="font-size:10px;color:var(--border);margin-top:4px">Emitido em 11/07/2025</div>
+      </div>
+    </div>
+  </div>
+</div>`
+
+};
+
+function show(screen) {
+  document.getElementById('mainContent').innerHTML = screens[screen] || screens.dashboard;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const map = {dashboard:0,residencias:1,novaResidencia:1,quartos:2,novoQuarto:2,clientes:3,novoCliente:3,alugueis:4,novoAluguel:5,recibo:6};
+  const items = document.querySelectorAll('.nav-item');
+  if(items[map[screen]]) items[map[screen]].classList.add('active');
+}
+
+show('dashboard');
+</script>
