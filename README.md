@@ -6,8 +6,8 @@
 |--------|------------|
 | Sprint 1 | Modelagem inicial (protótipo, diagramas e cartões CRC) |
 | Sprint 2 | Implementação do backend com Spring Boot, API REST e persistência em MySQL |
-| Sprint 3 | Implementação das regras de negócio e integração entre entidades |
-| Sprint 4 | Testes, refinamentos finais e apresentação do projeto |
+| Sprint 3 | |
+| Sprint 4 | |
 
 ---
 
