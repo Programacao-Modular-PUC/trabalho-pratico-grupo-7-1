@@ -1,14 +1,13 @@
-
 ---
 
 ## 🚀 Planejamento por Sprints
 
 | Sprint | Descrição |
 |------|----------|
-| Sprint 1 | Modelagem inicial (protótipo, diagrama, CRC) |
-| Sprint 2 |  |
-| Sprint 3 |  |
-| Sprint 4 |  |
+| Sprint 1 | Modelagem inicial (protótipo, diagramas e cartões CRC) |
+| Sprint 2 | Implementação do backend com Spring Boot, API REST e persistência em MySQL |
+| Sprint 3 | |
+| Sprint 4 | |
 
 ---
 
@@ -19,6 +18,7 @@ A documentação está organizada por sprints:
 - `docs/sprint-1`
 - `docs/sprint-2`
 - `docs/sprint-3`
+- `docs/sprint-4`
 
 ---
 
@@ -31,6 +31,7 @@ A documentação está organizada por sprints:
 - Gabriel Leal Matos
 - Rafael Henriques Correa
 - Vinicius Matos Oliveira
+
 ---
 
 ## 📌 Status do Projeto
@@ -41,4 +42,14 @@ A documentação está organizada por sprints:
 
 ## 📎 Observações
 
-Este projeto está sendo desenvolvido de forma incremental utilizando boas práticas de Engenharia de Software, versionamento com Git e organização por sprints.
+Este projeto está sendo desenvolvido de forma incremental utilizando conceitos de Programação Modular, Programação Orientada a Objetos e Engenharia de Software.
+
+O sistema utiliza:
+
+- Java
+- Spring Boot
+- MySQL
+- Git/GitHub para versionamento
+- Arquitetura em camadas
+
+A organização do projeto é baseada em sprints, permitindo evolução contínua das funcionalidades e melhor divisão de tarefas entre os integrantes.
