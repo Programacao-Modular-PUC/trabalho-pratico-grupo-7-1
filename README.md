@@ -6,7 +6,7 @@
 |--------|------------|
 | Sprint 1 | Modelagem inicial (protótipo, diagramas e cartões CRC) |
 | Sprint 2 | Implementação do backend com Spring Boot, API REST e persistência em MySQL |
-| Sprint 3 | |
+| Sprint 3 | Tratamento de exceções personalizadas e testes unitários com JUnit |
 | Sprint 4 | |
 
 ---
@@ -49,5 +49,7 @@ Este projeto está sendo desenvolvido de forma incremental utilizando conceitos 
 - Java
 - Spring Boot
 - MySQL
+- Maven (com Maven Wrapper)
+- JUnit 5 e Mockito (testes)
 - Git/GitHub
 - Arquitetura em camadas

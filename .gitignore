@@ -1,0 +1,25 @@
+# Build / compilados
+target/
+*.class
+
+# Logs
+*.log
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.project
+.classpath
+.settings/
+bin/
+build/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Mantém o Maven Wrapper versionado
+!.mvn/wrapper/maven-wrapper.properties

@@ -1,5 +1,6 @@
 package com.marau.hospedagem.service;
 
+import com.marau.hospedagem.exception.EntidadeNaoEncontradaException;
 import com.marau.hospedagem.model.Residencia;
 import com.marau.hospedagem.repository.ResidenciaRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class ResidenciaService {
 
     public Residencia buscarPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Residência não encontrada: " + id));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Residência", id));
     }
 
     public Residencia criar(Residencia residencia) {

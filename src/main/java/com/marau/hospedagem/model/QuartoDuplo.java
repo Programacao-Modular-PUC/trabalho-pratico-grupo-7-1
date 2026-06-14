@@ -61,8 +61,9 @@ public class QuartoDuplo extends Quarto {
     }
 
     /**
-     * Cliente solicita berço para o quarto.
+     * Cliente solicita berço para o quarto. Permitido no quarto duplo.
      */
+    @Override
     public void solicitarBerco() {
         this.possuiBerco = true;
     }
@@ -70,6 +71,7 @@ public class QuartoDuplo extends Quarto {
     /**
      * Remove solicitação de berço.
      */
+    @Override
     public void removerBerco() {
         this.possuiBerco = false;
     }

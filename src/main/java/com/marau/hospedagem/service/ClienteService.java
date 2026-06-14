@@ -1,5 +1,6 @@
 package com.marau.hospedagem.service;
 
+import com.marau.hospedagem.exception.EntidadeNaoEncontradaException;
 import com.marau.hospedagem.model.Cliente;
 import com.marau.hospedagem.repository.ClienteRepository;
 import org.springframework.stereotype.Service;
@@ -20,17 +21,17 @@ public class ClienteService {
 
     public Cliente buscarPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado: " + id));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente", id));
     }
 
     public Cliente buscarPorCpf(String cpf) {
         return repository.findByCpf(cpf)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado com CPF: " + cpf));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente com CPF " + cpf + " não encontrado."));
     }
 
     public Cliente criar(Cliente cliente) {
         if (repository.existsByCpf(cliente.getCpf())) {
-            throw new RuntimeException("CPF já cadastrado: " + cliente.getCpf());
+            throw new IllegalArgumentException("CPF já cadastrado: " + cliente.getCpf());
         }
         return repository.save(cliente);
     }

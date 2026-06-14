@@ -1,6 +1,7 @@
 package com.marau.hospedagem.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.marau.hospedagem.exception.RecursoNaoPermitidoException;
 import com.marau.hospedagem.model.enums.StatusQuarto;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -88,6 +89,26 @@ public abstract class Quarto {
      */
     public boolean isDisponivel(LocalDateTime entrada, LocalDateTime saida) {
         return status == StatusQuarto.LIVRE;
+    }
+
+    /**
+     * Solicita um berço para o quarto.
+     *
+     * <p>Comportamento padrão: berço <b>não</b> é permitido. Os tipos de quarto
+     * que suportam berço (ex.: {@link QuartoDuplo}) devem sobrescrever este método.</p>
+     *
+     * @throws RecursoNaoPermitidoException sempre, no comportamento padrão.
+     */
+    public void solicitarBerco() {
+        throw new RecursoNaoPermitidoException(
+                "Berço não é permitido em quarto do tipo " + getTipo() + " (" + identificacao + ").");
+    }
+
+    /**
+     * Remove a solicitação de berço. Por padrão não há berço a remover.
+     */
+    public void removerBerco() {
+        // Sem efeito para quartos que não suportam berço.
     }
 
     // Getters e Setters

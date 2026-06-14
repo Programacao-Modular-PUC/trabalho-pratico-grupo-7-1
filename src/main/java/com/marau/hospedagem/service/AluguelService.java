@@ -1,6 +1,8 @@
 package com.marau.hospedagem.service;
 
 import com.marau.hospedagem.dto.AluguelDTO;
+import com.marau.hospedagem.exception.EntidadeNaoEncontradaException;
+import com.marau.hospedagem.exception.QuartoIndisponivelException;
 import com.marau.hospedagem.model.*;
 import com.marau.hospedagem.model.enums.StatusAluguel;
 import com.marau.hospedagem.model.enums.StatusQuarto;
@@ -42,9 +44,21 @@ public class AluguelService {
         return aluguelRepository.findByClienteId(clienteId);
     }
 
+    /**
+     * Histórico de aluguéis de um cliente (NOVO REQUISITO - Sprint 3).
+     * Valida a existência do cliente antes de retornar o histórico.
+     *
+     * @throws EntidadeNaoEncontradaException se o cliente não existir.
+     */
+    public List<Aluguel> historicoPorCliente(Long clienteId) {
+        clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente", clienteId));
+        return aluguelRepository.findByClienteId(clienteId);
+    }
+
     public Aluguel buscarPorId(Long id) {
         return aluguelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Aluguel não encontrado: " + id));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Aluguel", id));
     }
 
     /**
@@ -58,22 +72,23 @@ public class AluguelService {
     @Transactional
     public Aluguel criar(AluguelDTO dto) {
         Residencia residencia = residenciaRepository.findById(dto.getResidenciaId())
-                .orElseThrow(() -> new RuntimeException("Residência não encontrada"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Residência", dto.getResidenciaId()));
 
         Quarto quarto = quartoRepository.findById(dto.getQuartoId())
-                .orElseThrow(() -> new RuntimeException("Quarto não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Quarto", dto.getQuartoId()));
 
         Cliente cliente = clienteRepository.findById(dto.getClienteId())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente", dto.getClienteId()));
 
-        // Validar disponibilidade
+        // Validar disponibilidade do quarto
         if (!quarto.isDisponivel(dto.getDataEntrada(), dto.getDataSaida())) {
-            throw new RuntimeException("Quarto não está disponível no período solicitado.");
+            throw QuartoIndisponivelException.paraQuarto(quarto.getIdentificacao());
         }
 
-        // Se QuartoDuplo e cliente solicitou berço
-        if (quarto instanceof QuartoDuplo quartoDuplo && Boolean.TRUE.equals(dto.getSolicitarBerco())) {
-            quartoDuplo.solicitarBerco();
+        // Berço: chamada polimórfica. Lança RecursoNaoPermitidoException se o
+        // tipo de quarto não suportar berço (ex.: individual ou família).
+        if (Boolean.TRUE.equals(dto.getSolicitarBerco())) {
+            quarto.solicitarBerco();
         }
 
         // Criar aluguel
@@ -140,7 +155,9 @@ public class AluguelService {
         }
 
         quartoRepository.save(aluguel.getQuarto());
-        aluguel.getPagamento().cancelar();
+        if (aluguel.getPagamento() != null) {
+            aluguel.getPagamento().cancelar();
+        }
         return aluguelRepository.save(aluguel);
     }
 

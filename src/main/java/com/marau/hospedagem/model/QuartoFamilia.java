@@ -1,5 +1,6 @@
 package com.marau.hospedagem.model;
 
+import com.marau.hospedagem.exception.CapacidadeExcedidaException;
 import jakarta.persistence.*;
 
 /**
@@ -63,8 +64,7 @@ public class QuartoFamilia extends Quarto {
     public double calcularComHospedes(int numHospedes) {
         if (numHospedes < 1) numHospedes = 1;
         if (numHospedes > getCapacidadeMaxima()) {
-            throw new IllegalArgumentException(
-                "Número de hóspedes (" + numHospedes + ") excede capacidade máxima (" + getCapacidadeMaxima() + ")");
+            throw new CapacidadeExcedidaException(numHospedes, getCapacidadeMaxima());
         }
 
         double base = calcularBaseComAdicionais();

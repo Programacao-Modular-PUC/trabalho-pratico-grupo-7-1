@@ -1,6 +1,8 @@
 package com.marau.hospedagem.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.marau.hospedagem.exception.CapacidadeExcedidaException;
+import com.marau.hospedagem.exception.DataInvalidaException;
 import com.marau.hospedagem.model.enums.StatusAluguel;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -75,9 +77,48 @@ public class Aluguel {
         this.dataEntrada = dataEntrada;
         this.dataSaida = dataSaida;
         this.numHospedes = numHospedes != null ? numHospedes : 1;
+
+        // Validações de regra de negócio (Sprint 3)
+        validarDatas();
+        validarCapacidade();
+
         this.quantidadeDiarias = calcularDiarias();
         this.valorDiaria = calcularValorDiariaQuarto();
         this.valorFinal = calcularValorFinal();
+    }
+
+    /**
+     * Valida as datas de entrada e saída do aluguel.
+     *
+     * @throws DataInvalidaException se alguma data for nula ou se a data de
+     *         saída não for posterior à data de entrada.
+     */
+    private void validarDatas() {
+        if (dataEntrada == null || dataSaida == null) {
+            throw new DataInvalidaException("As datas de entrada e de saída são obrigatórias.");
+        }
+        if (!dataSaida.isAfter(dataEntrada)) {
+            throw new DataInvalidaException("A data de saída deve ser posterior à data de entrada.");
+        }
+    }
+
+    /**
+     * Valida o número de hóspedes contra a capacidade máxima do quarto.
+     *
+     * @throws CapacidadeExcedidaException se o número de hóspedes for menor
+     *         que 1 ou maior que a capacidade máxima do quarto.
+     */
+    private void validarCapacidade() {
+        if (quarto == null) {
+            return;
+        }
+        if (numHospedes < 1) {
+            throw new CapacidadeExcedidaException("O número de hóspedes deve ser de pelo menos 1.");
+        }
+        int capacidade = quarto.getCapacidadeMaxima();
+        if (numHospedes > capacidade) {
+            throw new CapacidadeExcedidaException(numHospedes, capacidade);
+        }
     }
 
     /**
