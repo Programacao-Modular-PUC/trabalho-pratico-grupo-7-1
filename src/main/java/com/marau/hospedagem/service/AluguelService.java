@@ -6,10 +6,12 @@ import com.marau.hospedagem.exception.QuartoIndisponivelException;
 import com.marau.hospedagem.model.*;
 import com.marau.hospedagem.model.enums.StatusAluguel;
 import com.marau.hospedagem.model.enums.StatusQuarto;
+import com.marau.hospedagem.model.tarifa.ContextoTarifa;
 import com.marau.hospedagem.repository.AluguelRepository;
 import com.marau.hospedagem.repository.ClienteRepository;
 import com.marau.hospedagem.repository.QuartoRepository;
 import com.marau.hospedagem.repository.ResidenciaRepository;
+import com.marau.hospedagem.service.tarifa.GerenciadorTarifas;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -95,7 +97,11 @@ public class AluguelService {
         Aluguel aluguel = new Aluguel(residencia, quarto, cliente,
                 dto.getDataEntrada(), dto.getDataSaida(), dto.getNumHospedes());
 
-        // Gerar pagamento
+        // Tarifação flexível (Strategy + Singleton): ajusta a diária conforme as
+        // regras vigentes (temporada, feriado, promoção, cliente frequente).
+        aplicarTarifacao(aluguel);
+
+        // Gerar pagamento (já com o valor tarifado)
         Pagamento pagamento = new Pagamento(aluguel);
         aluguel.setPagamento(pagamento);
 
@@ -107,6 +113,36 @@ public class AluguelService {
         quartoRepository.save(quarto);
 
         return aluguelRepository.save(aluguel);
+    }
+
+    /**
+     * Aplica as regras de tarifação flexível sobre o aluguel recém-criado.
+     *
+     * <p>Monta o {@link ContextoTarifa} (data de entrada, diária base do quarto,
+     * número de diárias e histórico do cliente) e delega o cálculo ao
+     * {@link GerenciadorTarifas} (Singleton). O resultado redefine o valor da
+     * diária e o valor final, que serão usados por pagamento e recibo.</p>
+     */
+    private void aplicarTarifacao(Aluguel aluguel) {
+        int totalHospedagensCliente = 0;
+        if (aluguel.getCliente() != null && aluguel.getCliente().getId() != null) {
+            totalHospedagensCliente = (int) aluguelRepository
+                    .findByClienteId(aluguel.getCliente().getId()).stream()
+                    .filter(a -> a.getStatus() != StatusAluguel.CANCELADO)
+                    .count();
+        }
+
+        ContextoTarifa contexto = ContextoTarifa.builder()
+                .dataReferencia(aluguel.getDataEntrada().toLocalDate())
+                .valorDiariaBase(aluguel.getValorDiaria())
+                .quantidadeDiarias(aluguel.getQuantidadeDiarias())
+                .totalHospedagensCliente(totalHospedagensCliente)
+                .tipoQuarto(aluguel.getQuarto().getTipo())
+                .build();
+
+        double diariaTarifada = GerenciadorTarifas.getInstance().calcularValorDiaria(contexto);
+        aluguel.setValorDiaria(diariaTarifada);
+        aluguel.setValorFinal(diariaTarifada * aluguel.getQuantidadeDiarias());
     }
 
     /**

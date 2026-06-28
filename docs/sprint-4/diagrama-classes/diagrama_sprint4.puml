@@ -1,0 +1,121 @@
+@startuml diagrama_sprint4
+title Sprint 4 - Padrões de Projeto (Tarifação Flexível e Programa de Fidelidade)
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+left to right direction
+
+' ===================================================================
+' FUNCIONALIDADE 1 - TARIFAÇÃO FLEXÍVEL  (Strategy + Singleton)
+' ===================================================================
+package "Tarifação Flexível" #EEF5FF {
+
+  interface RegraTarifa <<Strategy>> {
+    +getNome(): String
+    +getPrioridade(): int
+    +isAplicavel(ctx: ContextoTarifa): boolean
+    +aplicar(ctx: ContextoTarifa, valor: double): double
+  }
+
+  class TarifaAltaTemporada
+  class TarifaBaixaTemporada
+  class TarifaFeriado
+  class TarifaPromocional
+  class TarifaClienteFrequente
+
+  RegraTarifa <|.. TarifaAltaTemporada
+  RegraTarifa <|.. TarifaBaixaTemporada
+  RegraTarifa <|.. TarifaFeriado
+  RegraTarifa <|.. TarifaPromocional
+  RegraTarifa <|.. TarifaClienteFrequente
+
+  class GerenciadorTarifas <<Singleton>> {
+    -{static} Holder.INSTANCIA: GerenciadorTarifas
+    -regras: List<RegraTarifa>
+    -GerenciadorTarifas()
+    +{static} getInstance(): GerenciadorTarifas
+    +registrarRegra(r: RegraTarifa): void
+    +removerRegra(nome: String): boolean
+    +calcular(ctx: ContextoTarifa): ResultadoTarifa
+  }
+
+  class ContextoTarifa
+  class ResultadoTarifa
+
+  GerenciadorTarifas o--> "*" RegraTarifa : regras
+  GerenciadorTarifas ..> ContextoTarifa
+  GerenciadorTarifas ..> ResultadoTarifa
+}
+
+' ===================================================================
+' FUNCIONALIDADE 2 - PROGRAMA DE FIDELIDADE  (Decorator + Factory)
+' ===================================================================
+package "Programa de Fidelidade" #F1FFF1 {
+
+  interface CalculoBeneficios <<Component>> {
+    +calcular(ctx: ContextoFidelidade): BeneficiosConcedidos
+  }
+
+  class SemBeneficios <<ConcreteComponent>>
+
+  abstract class BeneficioDecorator <<Decorator>> {
+    #componente: CalculoBeneficios
+    +calcular(ctx): BeneficiosConcedidos
+    #{abstract} aplicarBeneficio(b, ctx): void
+  }
+
+  class DescontoProgressivoDecorator
+  class UpgradeQuartoDecorator
+  class CheckoutEstendidoDecorator
+  class DiariaGratuitaDecorator
+
+  CalculoBeneficios <|.. SemBeneficios
+  CalculoBeneficios <|.. BeneficioDecorator
+  BeneficioDecorator o--> CalculoBeneficios : componente
+  BeneficioDecorator <|-- DescontoProgressivoDecorator
+  BeneficioDecorator <|-- UpgradeQuartoDecorator
+  BeneficioDecorator <|-- CheckoutEstendidoDecorator
+  BeneficioDecorator <|-- DiariaGratuitaDecorator
+
+  enum CategoriaFidelidade {
+    BRONZE
+    PRATA
+    OURO
+    DIAMANTE
+    +porHospedagens(n: int): CategoriaFidelidade
+  }
+
+  class FidelidadeFactory <<Factory Method>> {
+    +{static} criarBeneficios(cat: CategoriaFidelidade): CalculoBeneficios
+  }
+
+  class BeneficiosConcedidos
+  class ContextoFidelidade
+
+  FidelidadeFactory ..> CategoriaFidelidade
+  FidelidadeFactory ..> CalculoBeneficios : «cria»
+  CalculoBeneficios ..> BeneficiosConcedidos
+  CalculoBeneficios ..> ContextoFidelidade
+}
+
+' ===================================================================
+' CLASSES EXISTENTES (sprints anteriores) e suas relações com o novo
+' ===================================================================
+package "Existente (Sprints 1-3)" #FFF7E6 {
+  class AluguelService
+  class FidelidadeService
+  class Aluguel
+  class Cliente
+  class AluguelRepository
+}
+
+AluguelService ..> GerenciadorTarifas : getInstance()/calcular
+AluguelService ..> ContextoTarifa
+AluguelService --> Aluguel : aplica diária tarifada
+
+FidelidadeService ..> FidelidadeFactory
+FidelidadeService ..> CategoriaFidelidade
+FidelidadeService --> AluguelRepository : histórico
+FidelidadeService --> Cliente
+
+@enduml
