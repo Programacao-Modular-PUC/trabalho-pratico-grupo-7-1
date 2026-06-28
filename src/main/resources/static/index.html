@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marau · Hospedagem — Tarifação &amp; Fidelidade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">M</span>
+      <div class="brand-text">
+        <strong>Marau</strong>
+        <span>Sistema de Hospedagem</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item is-active" data-view="tarifas">
+        <span class="nav-dot"></span>
+        <span class="nav-label">Tarifação Flexível</span>
+        <span class="nav-tag">Strategy · Singleton</span>
+      </button>
+      <button class="nav-item" data-view="fidelidade">
+        <span class="nav-dot"></span>
+        <span class="nav-label">Programa de Fidelidade</span>
+        <span class="nav-tag">Decorator · Factory</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <span class="pulse" id="apiStatus"></span>
+      <span id="apiStatusText">verificando API…</span>
+    </div>
+  </aside>
+
+  <main class="stage">
+    <!-- ===================== TARIFAÇÃO ===================== -->
+    <section class="view is-active" id="view-tarifas">
+      <header class="view-head">
+        <p class="eyebrow">Opção 1</p>
+        <h1>Tarifação <em>Flexível</em></h1>
+        <p class="lead">Cote uma diária aplicando as regras vigentes — temporada, feriados,
+          promoções e descontos para clientes frequentes — combinadas por prioridade.</p>
+      </header>
+
+      <div class="cols">
+        <!-- Cotação -->
+        <article class="card span-2">
+          <div class="card-head">
+            <h2>Cotação de diária</h2>
+            <span class="chip">POST /tarifas/cotacao</span>
+          </div>
+          <form id="cotacaoForm" class="form-grid">
+            <label class="field">
+              <span>Data de referência</span>
+              <input type="date" name="dataReferencia" required />
+            </label>
+            <label class="field">
+              <span>Diária base (R$)</span>
+              <input type="number" name="valorDiariaBase" min="0" step="0.01" value="100" required />
+            </label>
+            <label class="field">
+              <span>Quantidade de diárias</span>
+              <input type="number" name="quantidadeDiarias" min="1" step="1" value="2" required />
+            </label>
+            <label class="field">
+              <span>Hospedagens do cliente</span>
+              <input type="number" name="totalHospedagensCliente" min="0" step="1" value="5" />
+            </label>
+            <label class="field span-full">
+              <span>Tipo de quarto <small>(opcional)</small></span>
+              <input list="tiposQuarto" name="tipoQuarto" placeholder="Ex.: DUPLO" />
+              <datalist id="tiposQuarto">
+                <option value="INDIVIDUAL"></option>
+                <option value="DUPLO"></option>
+                <option value="FAMILIA"></option>
+              </datalist>
+            </label>
+            <button type="submit" class="btn btn-primary span-full">Calcular tarifa</button>
+          </form>
+
+          <div id="cotacaoResult" class="result" hidden>
+            <div class="result-top">
+              <div>
+                <span class="result-klabel">Diária final</span>
+                <span class="result-kvalue" id="rDiariaFinal">—</span>
+                <span class="result-base" id="rDiariaBase"></span>
+              </div>
+              <div class="result-delta" id="rDelta"></div>
+            </div>
+            <div class="result-rules">
+              <span class="result-klabel">Regras aplicadas</span>
+              <div class="chips" id="rRegras"></div>
+            </div>
+            <div class="result-totals">
+              <div><span>Total base</span><strong id="rTotalBase">—</strong></div>
+              <div class="arrow">→</div>
+              <div><span>Total final</span><strong id="rTotal">—</strong></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Regras vigentes -->
+        <article class="card">
+          <div class="card-head">
+            <h2>Regras vigentes</h2>
+            <button class="chip chip-btn" id="reloadRegras" title="Recarregar">↻ GET /tarifas</button>
+          </div>
+          <ul class="rules-list" id="regrasList">
+            <li class="muted">carregando…</li>
+          </ul>
+        </article>
+
+        <!-- Nova promoção -->
+        <article class="card">
+          <div class="card-head">
+            <h2>Nova promoção</h2>
+            <span class="chip">POST /tarifas/promocao</span>
+          </div>
+          <form id="promoForm" class="form-grid">
+            <label class="field span-full">
+              <span>Nome da promoção</span>
+              <input type="text" name="nome" placeholder="Ex.: Black Friday" required />
+            </label>
+            <label class="field">
+              <span>Início</span>
+              <input type="date" name="inicio" required />
+            </label>
+            <label class="field">
+              <span>Fim</span>
+              <input type="date" name="fim" required />
+            </label>
+            <label class="field span-full">
+              <span>Desconto (%)</span>
+              <input type="number" name="percentualDesconto" min="0" max="100" step="1" value="25" required />
+            </label>
+            <button type="submit" class="btn span-full">Cadastrar em runtime</button>
+          </form>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== FIDELIDADE ===================== -->
+    <section class="view" id="view-fidelidade">
+      <header class="view-head">
+        <p class="eyebrow">Opção 2</p>
+        <h1>Programa de <em>Fidelidade</em></h1>
+        <p class="lead">A categoria do cliente é derivada do histórico de hospedagens e os
+          benefícios são empilhados dinamicamente (Decorator) conforme o nível alcançado.</p>
+      </header>
+
+      <div class="cols">
+        <article class="card span-2">
+          <div class="card-head">
+            <h2>Consultar cliente</h2>
+            <span class="chip">GET /fidelidade/cliente/{id}</span>
+          </div>
+          <form id="fidForm" class="form-grid">
+            <label class="field span-full">
+              <span>Cliente</span>
+              <select name="clienteSelect" id="clienteSelect">
+                <option value="">— selecione (ou informe o ID) —</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>ID do cliente</span>
+              <input type="number" name="clienteId" id="clienteId" min="1" step="1" placeholder="Ex.: 1" required />
+            </label>
+            <label class="field">
+              <span>Diárias (simulação)</span>
+              <input type="number" name="diarias" min="1" step="1" value="3" />
+            </label>
+            <label class="field span-full">
+              <span>Valor da hospedagem p/ simular (R$)</span>
+              <input type="number" name="valor" min="0" step="0.01" value="300" />
+            </label>
+            <div class="btn-row span-full">
+              <button type="submit" class="btn btn-primary">Consultar &amp; simular</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="card span-2 result-card" id="fidResultCard" hidden>
+          <div class="fid-head">
+            <div>
+              <span class="result-klabel">Cliente</span>
+              <h3 id="fNome">—</h3>
+              <span class="muted" id="fHosp"></span>
+            </div>
+            <span class="badge" id="fCategoria">—</span>
+          </div>
+
+          <div class="benef-grid" id="fBeneficios"></div>
+
+          <div class="sim-strip" id="fSim" hidden>
+            <div><span>Valor original</span><strong id="fOriginal">—</strong></div>
+            <div class="arrow">→</div>
+            <div class="sim-final"><span>Com fidelidade</span><strong id="fComDesconto">—</strong></div>
+            <div class="sim-eco" id="fEconomia"></div>
+          </div>
+        </article>
+
+        <article class="card span-2 helper" id="quickClienteCard">
+          <div class="card-head">
+            <h2>Cliente de teste</h2>
+            <span class="chip">POST /clientes</span>
+          </div>
+          <p class="muted small">Banco H2 começa vazio. Crie um cliente para demonstrar a
+            consulta de fidelidade.</p>
+          <form id="quickClienteForm" class="form-grid">
+            <label class="field">
+              <span>Nome</span>
+              <input type="text" name="nome" placeholder="Maria Silva" required />
+            </label>
+            <label class="field">
+              <span>CPF</span>
+              <input type="text" name="cpf" placeholder="000.000.000-00" required />
+            </label>
+            <button type="submit" class="btn span-full">Criar cliente</button>
+          </form>
+        </article>
+      </div>
+    </section>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
