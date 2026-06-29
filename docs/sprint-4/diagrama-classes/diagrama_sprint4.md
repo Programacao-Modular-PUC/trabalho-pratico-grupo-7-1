@@ -6,6 +6,9 @@ as classes novas se relacionam com as já existentes (`AluguelService`,
 
 > Versão renderizável também disponível em PlantUML:
 > [`diagrama_sprint4.puml`](diagrama_sprint4.puml).
+>
+> Visão consolidada (todas as classes novas + núcleo existente em uma única
+> imagem, útil para apresentação rápida): [`diagrama_visao_geral.png`](diagrama_visao_geral.png).
 
 ## 1. Tarifação Flexível — Strategy + Singleton
 
