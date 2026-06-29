@@ -7,7 +7,7 @@
 | Sprint 1 | Modelagem inicial (protótipo, diagramas e cartões CRC) |
 | Sprint 2 | Implementação do backend com Spring Boot, API REST e persistência em MySQL |
 | Sprint 3 | Tratamento de exceções personalizadas e testes unitários com JUnit |
-| Sprint 4 | |
+| Sprint 4 | Evolução arquitetural com padrões de projeto (Strategy, Decorator, Factory Method e Singleton) |
 
 ---
 
